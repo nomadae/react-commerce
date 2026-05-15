@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import { Card, Badge, Button } from 'react-bootstrap';
 import type { Product } from '~/types';
 import { renderRating } from '~/utils/rating';
@@ -10,7 +11,7 @@ interface ProductCardProps {
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   return (
     <Card className="h-100 product-card shadow-sm">
-      <div className="position-relative">
+      <Link to={`/products/${product.id}`} className="position-relative d-block">
         <Card.Img
           variant="top"
           src={product.image}
@@ -27,7 +28,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             Últimas {product.stock}
           </Badge>
         )}
-      </div>
+      </Link>
 
       <Card.Body>
         <div className="mb-2">
@@ -36,7 +37,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           </Badge>
         </div>
 
-        <Card.Title className="h6 fw-bold mb-2">{product.name}</Card.Title>
+        <Link to={`/products/${product.id}`} className="text-decoration-none text-dark">
+          <Card.Title className="h6 fw-bold mb-2">{product.name}</Card.Title>
+        </Link>
 
         <div className="d-flex align-items-center mb-2">
           <div className="me-2">{renderRating(product.rating)}</div>

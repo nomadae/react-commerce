@@ -6,6 +6,7 @@ import { resolve } from "path";
 
 export default {
   root: resolve(__dirname, 'app'),
+  envDir: resolve(__dirname),
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
   build: {
     outDir: '../dist'

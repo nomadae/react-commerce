@@ -13,7 +13,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
     <Card
       className="h-100 text-center category-card border-0 shadow-sm"
       style={{ cursor: 'pointer' }}
-      onClick={() => navigate(`/categorias/${category.id}`)}
+      onClick={() => navigate(`/categorias/${category.slug}`)}
     >
       <Card.Body>
         <div className="category-image mb-3">

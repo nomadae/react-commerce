@@ -75,13 +75,26 @@ export const mockProducts: Product[] = [
   },
 ];
 
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/\s+/g, '-');
+}
+
 export const mockCategories: Category[] = [
-  { id: 1, name: 'Electrónica', count: 245, image: 'https://via.placeholder.com/150x150?text=Electronica' },
-  { id: 2, name: 'Moda', count: 567, image: 'https://via.placeholder.com/150x150?text=Moda' },
-  { id: 3, name: 'Hogar', count: 389, image: 'https://via.placeholder.com/150x150?text=Hogar' },
-  { id: 4, name: 'Deportes', count: 178, image: 'https://via.placeholder.com/150x150?text=Deportes' },
-  { id: 5, name: 'Libros', count: 423, image: 'https://via.placeholder.com/150x150?text=Libros' },
-  { id: 6, name: 'Juguetes', count: 156, image: 'https://via.placeholder.com/150x150?text=Juguetes' },
+  { id: 1, name: 'Electrónica', slug: slugify('Electrónica'), count: 245, image: 'https://via.placeholder.com/150x150?text=Electronica' },
+  { id: 2, name: 'Moda', slug: slugify('Moda'), count: 567, image: 'https://via.placeholder.com/150x150?text=Moda' },
+  { id: 3, name: 'Hogar', slug: slugify('Hogar'), count: 389, image: 'https://via.placeholder.com/150x150?text=Hogar' },
+  { id: 4, name: 'Deportes', slug: slugify('Deportes'), count: 178, image: 'https://via.placeholder.com/150x150?text=Deportes' },
+  { id: 5, name: 'Libros', slug: slugify('Libros'), count: 423, image: 'https://via.placeholder.com/150x150?text=Libros' },
+  { id: 6, name: 'Juguetes', slug: slugify('Juguetes'), count: 156, image: 'https://via.placeholder.com/150x150?text=Juguetes' },
+  { id: 7, name: 'Audio', slug: slugify('Audio'), count: 89, image: 'https://via.placeholder.com/150x150?text=Audio' },
+  { id: 8, name: 'Wearables', slug: slugify('Wearables'), count: 64, image: 'https://via.placeholder.com/150x150?text=Wearables' },
+  { id: 9, name: 'Fotografía', slug: slugify('Fotografía'), count: 42, image: 'https://via.placeholder.com/150x150?text=Fotografia' },
+  { id: 10, name: 'Computadoras', slug: slugify('Computadoras'), count: 120, image: 'https://via.placeholder.com/150x150?text=Computadoras' },
+  { id: 11, name: 'Accesorios', slug: slugify('Accesorios'), count: 310, image: 'https://via.placeholder.com/150x150?text=Accesorios' },
 ];
 
 export function simulateApiDelay<T>(data: T, ms = 1000): Promise<T> {

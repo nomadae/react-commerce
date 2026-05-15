@@ -2,8 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import type React from 'react';
 import { Container } from 'react-bootstrap';
 
-import type { Product, Category, CartItem } from '~/types';
+import type { Product, Category } from '~/types';
 import { mockProducts, mockCategories, simulateApiDelay } from '~/data/mock';
+import { useCart } from '~/context/CartContext';
 import { Navbar } from '~/components/Navbar';
 import { HeroCarousel } from '~/components/HeroCarousel';
 import { CategoryGrid } from '~/components/CategoryGrid';
@@ -21,11 +22,9 @@ const HomePage = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [cartOpen, setCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const cart = useCart();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,36 +52,11 @@ const HomePage = () => {
   };
 
   const handleAddToCart = useCallback((productId: number) => {
-    setCartItems((prev) => {
-      const existing = prev.find((item) => item.product.id === productId);
-      if (existing) {
-        return prev.map((item) =>
-          item.product.id === productId
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      const product = featuredProducts.find((p) => p.id === productId);
-      if (!product) return prev;
-      return [...prev, { product, quantity: 1 }];
-    });
-  }, [featuredProducts]);
-
-  const handleUpdateQuantity = useCallback((productId: number, quantity: number) => {
-    if (quantity <= 0) {
-      setCartItems((prev) => prev.filter((item) => item.product.id !== productId));
-      return;
+    const product = featuredProducts.find((p) => p.id === productId);
+    if (product) {
+      cart.addToCart(product);
     }
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
-      )
-    );
-  }, []);
-
-  const handleRemoveItem = useCallback((productId: number) => {
-    setCartItems((prev) => prev.filter((item) => item.product.id !== productId));
-  }, []);
+  }, [featuredProducts, cart]);
 
   if (error) {
     return <ErrorAlert message={error} />;
@@ -94,16 +68,14 @@ const HomePage = () => {
         searchTerm={searchTerm}
         onSearchChange={(e) => setSearchTerm(e.target.value)}
         onSearchSubmit={handleSearch}
-        cartCount={cartCount}
-        onCartClick={() => setCartOpen(true)}
       />
 
       <Cart
-        isOpen={cartOpen}
-        onClose={() => setCartOpen(false)}
-        items={cartItems}
-        onUpdateQuantity={handleUpdateQuantity}
-        onRemoveItem={handleRemoveItem}
+        isOpen={cart.isOpen}
+        onClose={cart.closeCart}
+        items={cart.items}
+        onUpdateQuantity={cart.updateQuantity}
+        onRemoveItem={cart.removeItem}
       />
 
       <main>
