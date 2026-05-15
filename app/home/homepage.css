@@ -4,6 +4,11 @@
 }
 
 /* Navbar Styles */
+@media (min-width: 992px) {
+  .navbar-expand-lg .collapse-mobile-only {
+    display: none !important;
+  }
+}
 .navbar {
   transition: all 0.3s ease;
 }
@@ -91,18 +96,24 @@
 }
 
 /* Rating Stars */
-.text-warning.half-star {
-  position: relative;
+.star-item {
+  display: inline-flex;
+  align-items: center;
 }
 
-.text-warning.half-star::before {
-  content: '★';
+.half-star {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.half-star .star-overflow {
   position: absolute;
   left: 0;
   top: 0;
   width: 50%;
+  height: 100%;
   overflow: hidden;
-  color: #ffc107;
 }
 
 /* Benefits Section */
@@ -198,13 +209,12 @@ footer .nav-link:hover {
 }
 
 /* Hover Effects for Buttons */
-.btn {
+.btn-ripple {
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
 }
 
-.btn::after {
+.btn-ripple::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -217,7 +227,7 @@ footer .nav-link:hover {
   transition: width 0.6s, height 0.6s;
 }
 
-.btn:active::after {
+.btn-ripple:active::after {
   width: 200px;
   height: 200px;
 }
