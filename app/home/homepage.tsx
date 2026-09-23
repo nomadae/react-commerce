@@ -1,27 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
-import type React from 'react';
 
 import type { Product, Category } from '~/types';
 import { mockProducts, mockCategories, simulateApiDelay } from '~/data/mock';
 import { useCart } from '~/context/CartContext';
-import { Navbar } from '~/components/Navbar';
 import { HeroCarousel } from '~/components/HeroCarousel';
 import { CategoryGrid } from '~/components/CategoryGrid';
 import { ProductGrid } from '~/components/ProductGrid';
 import { Benefits } from '~/components/Benefits';
 import { Newsletter } from '~/components/Newsletter';
-import { Footer } from '~/components/Footer';
 import { ErrorAlert } from '~/components/ErrorAlert';
-import { Cart } from '~/components/Cart';
-
-import './homepage.css';
 
 const HomePage = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
 
   const cart = useCart();
 
@@ -45,11 +38,6 @@ const HomePage = () => {
     fetchData();
   }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Buscando:', searchTerm);
-  };
-
   const handleAddToCart = useCallback((productId: number) => {
     const product = featuredProducts.find((p) => p.id === productId);
     if (product) {
@@ -62,37 +50,19 @@ const HomePage = () => {
   }
 
   return (
-    <div className="homepage">
-      <Navbar
-        searchTerm={searchTerm}
-        onSearchChange={(e) => setSearchTerm(e.target.value)}
-        onSearchSubmit={handleSearch}
-      />
+    <main>
+      <HeroCarousel />
 
-      <Cart
-        isOpen={cart.isOpen}
-        onClose={cart.closeCart}
-        items={cart.items}
-        onUpdateQuantity={cart.updateQuantity}
-        onRemoveItem={cart.removeItem}
-      />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+        <h2 className="text-center mb-5 text-3xl font-bold">Categorías Destacadas</h2>
+        <CategoryGrid categories={categories} loading={loading} />
+      </div>
 
-      <main>
-        <HeroCarousel />
+      <ProductGrid products={featuredProducts} loading={loading} onAddToCart={handleAddToCart} />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <h2 className="text-center mb-5 text-3xl font-bold">Categorías Destacadas</h2>
-          <CategoryGrid categories={categories} loading={loading} />
-        </div>
-
-        <ProductGrid products={featuredProducts} loading={loading} onAddToCart={handleAddToCart} />
-
-        <Benefits />
-        <Newsletter />
-      </main>
-
-      <Footer />
-    </div>
+      <Benefits />
+      <Newsletter />
+    </main>
   );
 };
 
