@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
-import { StarFill, Star, Cart, ArrowLeft, Grid as GridIcon } from 'react-bootstrap-icons';
+import { Cart, ArrowLeft, Grid as GridIcon } from 'react-bootstrap-icons';
 import { mockProducts, mockCategories, simulateApiDelay } from '~/data/mock';
 import type { Product } from '~/types';
 import { useCart } from '~/context/CartContext';
 import { ErrorAlert } from './ErrorAlert';
+import { renderRating } from '~/utils/rating';
 
 function slugify(name: string): string {
   return name
@@ -12,30 +13,6 @@ function slugify(name: string): string {
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .replace(/\s+/g, '-');
-}
-
-function renderStars(rating: number) {
-  const stars = [];
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 >= 0.5;
-
-  for (let i = 0; i < 5; i++) {
-    if (i < fullStars) {
-      stars.push(<StarFill key={i} className="text-amber-400" size={14} />);
-    } else if (i === fullStars && hasHalfStar) {
-      stars.push(
-        <span key={i} className="relative inline-flex">
-          <Star className="text-gray-300" size={14} />
-          <span className="absolute left-0 top-0 w-1/2 overflow-hidden">
-            <StarFill className="text-amber-400" size={14} />
-          </span>
-        </span>
-      );
-    } else {
-      stars.push(<Star key={i} className="text-gray-300" size={14} />);
-    }
-  }
-  return stars;
 }
 
 interface CategoryProductsPageProps {
@@ -208,7 +185,7 @@ export function CategoryProductsPage({ categorySlug }: CategoryProductsPageProps
                     </Link>
                     <div className="flex items-center gap-1.5 mb-3">
                       <span className="inline-flex items-center gap-0.5">
-                        {renderStars(product.rating)}
+                        {renderRating(product.rating, 14)}
                       </span>
                       <span className="text-xs text-gray-400">({product.reviews})</span>
                     </div>

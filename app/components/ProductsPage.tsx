@@ -1,36 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
-import { StarFill, Star, Cart, ArrowLeft, Grid as GridIcon, Funnel } from 'react-bootstrap-icons';
+import { Cart, ArrowLeft, Grid as GridIcon, Funnel } from 'react-bootstrap-icons';
 import { mockProducts, simulateApiDelay } from '~/data/mock';
 import type { Product } from '~/types';
 import { useCart } from '~/context/CartContext';
 import { ErrorAlert } from './ErrorAlert';
+import { renderRating } from '~/utils/rating';
 
 type SortKey = 'default' | 'price-asc' | 'price-desc' | 'rating' | 'name';
-
-function renderStars(rating: number) {
-  const stars = [];
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 >= 0.5;
-
-  for (let i = 0; i < 5; i++) {
-    if (i < fullStars) {
-      stars.push(<StarFill key={i} className="text-amber-400" size={14} />);
-    } else if (i === fullStars && hasHalfStar) {
-      stars.push(
-        <span key={i} className="relative inline-flex">
-          <Star className="text-gray-300" size={14} />
-          <span className="absolute left-0 top-0 w-1/2 overflow-hidden">
-            <StarFill className="text-amber-400" size={14} />
-          </span>
-        </span>
-      );
-    } else {
-      stars.push(<Star key={i} className="text-gray-300" size={14} />);
-    }
-  }
-  return stars;
-}
 
 export function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -233,7 +210,7 @@ export function ProductsPage() {
 
                     <div className="flex items-center gap-1.5 mb-3">
                       <span className="inline-flex items-center gap-0.5">
-                        {renderStars(product.rating)}
+                        {renderRating(product.rating, 14)}
                       </span>
                       <span className="text-xs text-gray-400">({product.reviews})</span>
                     </div>
