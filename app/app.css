@@ -7,9 +7,16 @@
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  @apply bg-white;
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
+  /* The UI is light-only: no `dark:` utility variants are used anywhere, so
+     the document must not declare a dark color-scheme. Doing so made browsers
+     render native form controls (inputs, selects, carets) with dark defaults -
+     white text and a white caret - on the app's white input backgrounds. */
+  color-scheme: light;
+
+  /* `clip` rather than `hidden`: both stop sideways scrolling, but `hidden`
+     turns the element into a scroll container, which silently disables
+     `position: sticky` for descendants (the Navbar). `clip` does not. */
+  overflow-x: clip;
 }

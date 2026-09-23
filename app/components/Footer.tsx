@@ -1,114 +1,111 @@
 import { Link } from 'react-router';
-import { Container, Row, Col, Button } from 'react-bootstrap';
 import { Box, GeoAlt, Telephone, Envelope } from 'react-bootstrap-icons';
 
 export function Footer() {
   return (
-    <footer className="bg-dark text-white-50 py-5">
-      <Container>
-        <Row xs={1} md={2} lg={4} className="g-4">
-          <Col>
-            <div className="d-flex align-items-center mb-3">
-              <Box className="text-primary me-2" size={24} />
-              <span className="fw-bold fs-4 text-white">TechStore</span>
+    <footer className="bg-gray-900 text-gray-400 py-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <div className="flex items-center mb-3">
+              <Box size={24} className="text-blue-500 mr-2" />
+              <span className="font-bold text-xl text-white">TechStore</span>
             </div>
-            <p className="small">
+            <p className="text-sm">
               Tu tienda de tecnología de confianza. Los mejores productos al mejor precio.
             </p>
-            <div className="d-flex gap-3">
-              <Button variant="link" className="text-white-50 p-0">
+            <div className="flex gap-3 mt-3">
+              <a href="#" aria-label="Facebook" className="text-gray-400 hover:text-white">
                 <img src="https://via.placeholder.com/24?text=f" alt="Facebook" />
-              </Button>
-              <Button variant="link" className="text-white-50 p-0">
+              </a>
+              <a href="#" aria-label="Twitter" className="text-gray-400 hover:text-white">
                 <img src="https://via.placeholder.com/24?text=t" alt="Twitter" />
-              </Button>
-              <Button variant="link" className="text-white-50 p-0">
+              </a>
+              <a href="#" aria-label="Instagram" className="text-gray-400 hover:text-white">
                 <img src="https://via.placeholder.com/24?text=i" alt="Instagram" />
-              </Button>
+              </a>
             </div>
-          </Col>
+          </div>
 
-          <Col>
-            <h5 className="text-white mb-3">Enlaces Rápidos</h5>
-            <ul className="list-unstyled">
-              <li className="mb-2">
-                <Link to="/sobre-nosotros" className="nav-link text-white-50 p-0">
+          <div>
+            <h5 className="text-white mb-3 font-semibold">Enlaces Rápidos</h5>
+            <ul className="space-y-2 list-none p-0">
+              <li>
+                <Link to="/sobre-nosotros" className="text-gray-400 hover:text-white hover:underline no-underline">
                   Sobre Nosotros
                 </Link>
               </li>
-              <li className="mb-2">
-                <Link to="/contacto" className="nav-link text-white-50 p-0">
+              <li>
+                <Link to="/contacto" className="text-gray-400 hover:text-white hover:underline no-underline">
                   Contacto
                 </Link>
               </li>
-              <li className="mb-2">
-                <Link to="/faq" className="nav-link text-white-50 p-0">
+              <li>
+                <Link to="/faq" className="text-gray-400 hover:text-white hover:underline no-underline">
                   Preguntas Frecuentes
                 </Link>
               </li>
-              <li className="mb-2">
-                <Link to="/terminos" className="nav-link text-white-50 p-0">
+              <li>
+                <Link to="/terminos" className="text-gray-400 hover:text-white hover:underline no-underline">
                   Términos y Condiciones
                 </Link>
               </li>
             </ul>
-          </Col>
+          </div>
 
-          <Col>
-            <h5 className="text-white mb-3">Categorías</h5>
-            <ul className="list-unstyled">
-              <li className="mb-2">
-                <Link to="/categorias/electronica" className="nav-link text-white-50 p-0">
+          <div>
+            <h5 className="text-white mb-3 font-semibold">Categorías</h5>
+            <ul className="space-y-2 list-none p-0">
+              <li>
+                <Link to="/categorias/electronica" className="text-gray-400 hover:text-white hover:underline no-underline">
                   Electrónica
                 </Link>
               </li>
-              <li className="mb-2">
-                <Link to="/categorias/computadoras" className="nav-link text-white-50 p-0">
+              <li>
+                <Link to="/categorias/computadoras" className="text-gray-400 hover:text-white hover:underline no-underline">
                   Computadoras
                 </Link>
               </li>
-              <li className="mb-2">
-                <Link to="/categorias/audio" className="nav-link text-white-50 p-0">
+              <li>
+                <Link to="/categorias/audio" className="text-gray-400 hover:text-white hover:underline no-underline">
                   Audio
                 </Link>
               </li>
-              <li className="mb-2">
-                <Link to="/categorias/accesorios" className="nav-link text-white-50 p-0">
+              <li>
+                <Link to="/categorias/accesorios" className="text-gray-400 hover:text-white hover:underline no-underline">
                   Accesorios
                 </Link>
               </li>
             </ul>
-          </Col>
+          </div>
 
-          <Col>
-            <h5 className="text-white mb-3">Contacto</h5>
-            <ul className="list-unstyled">
-              <li className="mb-2 d-flex align-items-center gap-2">
+          <div>
+            <h5 className="text-white mb-3 font-semibold">Contacto</h5>
+            <ul className="space-y-2 list-none p-0">
+              <li className="flex items-center gap-2">
                 <GeoAlt size={16} />
-                <span>Av. Principal 123, Santiago, Chile</span>
+                <span className="text-sm">Av. Principal 123, Santiago, Chile</span>
               </li>
-              <li className="mb-2 d-flex align-items-center gap-2">
+              <li className="flex items-center gap-2">
                 <Telephone size={16} />
-                <span>+56 2 2345 6789</span>
+                <span className="text-sm">+56 2 2345 6789</span>
               </li>
-              <li className="mb-2 d-flex align-items-center gap-2">
+              <li className="flex items-center gap-2">
                 <Envelope size={16} />
-                <span>contacto@techstore.com</span>
+                <span className="text-sm">contacto@techstore.com</span>
               </li>
             </ul>
-          </Col>
-        </Row>
+          </div>
+        </div>
 
-        <hr className="my-4 bg-secondary" />
+        <hr className="my-4 border-gray-700" />
 
-        <Row>
-          <Col className="text-center">
-            <p className="small mb-0">
-              &copy; {new Date().getFullYear()} TechStore. Todos los derechos reservados.
-            </p>
-          </Col>
-        </Row>
-      </Container>
+        <div className="text-center">
+          <p className="text-sm mb-0">
+            &copy; {new Date().getFullYear()} TechStore. Todos los derechos reservados.
+          </p>
+        </div>
+      </div>
     </footer>
   );
 }

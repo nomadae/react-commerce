@@ -1,5 +1,4 @@
 import { Link } from 'react-router';
-import { Card, Badge, Button } from 'react-bootstrap';
 import type { Product } from '~/types';
 import { renderRating } from '~/utils/rating';
 
@@ -10,66 +9,67 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   return (
-    <Card className="h-100 product-card shadow-sm">
-      <Link to={`/products/${product.id}`} className="position-relative d-block">
-        <Card.Img
-          variant="top"
+    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden h-full hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col">
+      <Link to={`/products/${product.id}`} className="relative block">
+        <img
           src={product.image}
           alt={product.name}
-          style={{ height: '200px', objectFit: 'cover' }}
+          className="w-full h-48 object-cover"
         />
         {product.discount > 0 && (
-          <Badge bg="danger" className="position-absolute top-0 start-0 m-2">
+          <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
             -{product.discount}%
-          </Badge>
+          </span>
         )}
-        {product.stock < 10 && (
-          <Badge bg="warning" className="position-absolute top-0 end-0 m-2">
+        {product.stock > 0 && product.stock < 10 && (
+          <span className="absolute top-2 right-2 bg-amber-400 text-white text-xs font-bold px-2 py-0.5 rounded-full">
             Últimas {product.stock}
-          </Badge>
+          </span>
         )}
       </Link>
 
-      <Card.Body>
+      <div className="p-3 flex flex-col flex-1">
         <div className="mb-2">
-          <Badge bg="secondary" className="text-uppercase small">
+          <span className="inline-block bg-gray-100 text-gray-600 text-xs uppercase tracking-wider px-2 py-0.5 rounded-full">
             {product.category}
-          </Badge>
+          </span>
         </div>
 
-        <Link to={`/products/${product.id}`} className="text-decoration-none text-dark">
-          <Card.Title className="h6 fw-bold mb-2">{product.name}</Card.Title>
+        <Link to={`/products/${product.id}`} className="text-gray-900 no-underline">
+          <h3 className="text-sm font-bold mb-2 text-gray-900 hover:text-blue-600 transition-colors">
+            {product.name}
+          </h3>
         </Link>
 
-        <div className="d-flex align-items-center mb-2">
-          <div className="me-2">{renderRating(product.rating)}</div>
-          <span className="text-muted small">({product.reviews})</span>
+        <div className="flex items-center mb-2">
+          <div className="mr-1">{renderRating(product.rating)}</div>
+          <span className="text-xs text-gray-500 ml-1">({product.reviews})</span>
         </div>
 
-        <div className="mb-3">
+        <div className="mb-3 mt-auto">
           {product.discount > 0 ? (
             <>
-              <span className="h5 fw-bold text-primary me-2">
+              <span className="text-lg font-bold text-blue-600 mr-2">
                 ${product.price.toFixed(2)}
               </span>
-              <span className="text-muted text-decoration-line-through">
+              <span className="text-sm text-gray-400 line-through">
                 ${product.originalPrice.toFixed(2)}
               </span>
             </>
           ) : (
-            <span className="h5 fw-bold text-primary">${product.price.toFixed(2)}</span>
+            <span className="text-lg font-bold text-blue-600">${product.price.toFixed(2)}</span>
           )}
         </div>
 
-        <Button
-          variant="primary"
-          className="w-100"
+        <button
+          type="button"
+          className="w-full py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={() => onAddToCart(product.id)}
           disabled={product.stock === 0}
         >
           {product.stock > 0 ? 'Añadir al Carrito' : 'Agotado'}
-        </Button>
-      </Card.Body>
-    </Card>
+        </button>
+      </div>
+    </div>
   );
 }

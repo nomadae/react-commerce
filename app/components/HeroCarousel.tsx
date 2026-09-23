@@ -1,61 +1,41 @@
 import { Link } from 'react-router';
-import { Container, Row, Col, Carousel } from 'react-bootstrap';
 
 export function HeroCarousel() {
   return (
-    <Carousel className="hero-carousel" fade>
-      <Carousel.Item>
-        <div className="hero-slide bg-primary text-white py-5">
-          <Container className="py-5">
-            <Row className="align-items-center">
-              <Col lg={6} className="text-center text-lg-start">
-                <h1 className="display-4 fw-bold mb-4">Tecnología al Alcance</h1>
-                <p className="lead mb-4">
-                  Descubre lo último en electrónica y gadgets con los mejores precios del mercado.
-                </p>
-                <Link to="/products" className="btn btn-light btn-lg me-3 btn-ripple">
+    <div className="relative overflow-hidden">
+      <div className="bg-blue-600 text-white py-5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+          <div className="flex flex-col lg:flex-row items-center gap-8">
+            <div className="flex-1 text-center lg:text-left">
+              <h1 className="text-4xl font-bold mb-4">Tecnología al Alcance</h1>
+              <p className="text-lg mb-6">
+                Descubre lo último en electrónica y gadgets con los mejores precios del mercado.
+              </p>
+              <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+                <Link
+                  to="/products"
+                  className="inline-block px-5 py-3 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
+                >
                   Comprar Ahora
                 </Link>
-                <Link to="/ofertas" className="btn btn-outline-light btn-lg btn-ripple">
+                <Link
+                  to="/ofertas"
+                  className="inline-block px-5 py-3 border border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors"
+                >
                   Ver Ofertas
                 </Link>
-              </Col>
-              <Col lg={6} className="d-none d-lg-block">
-                <img
-                  src="https://via.placeholder.com/600x400?text=Tech"
-                  alt="Tecnología"
-                  className="img-fluid rounded"
-                />
-              </Col>
-            </Row>
-          </Container>
+              </div>
+            </div>
+            <div className="hidden lg:block flex-1">
+              <img
+                src="https://via.placeholder.com/600x400?text=Tech"
+                alt="Tecnología"
+                className="w-full rounded-lg"
+              />
+            </div>
+          </div>
         </div>
-      </Carousel.Item>
-
-      <Carousel.Item>
-        <div className="hero-slide bg-success text-white py-5">
-          <Container className="py-5">
-            <Row className="align-items-center">
-              <Col lg={6} className="text-center text-lg-start">
-                <h1 className="display-4 fw-bold mb-4">Hasta 40% OFF</h1>
-                <p className="lead mb-4">
-                  Ofertas exclusivas en productos seleccionados. ¡No te las pierdas!
-                </p>
-                <Link to="/ofertas" className="btn btn-light btn-lg btn-ripple">
-                  Ver Ofertas
-                </Link>
-              </Col>
-              <Col lg={6} className="d-none d-lg-block">
-                <img
-                  src="https://via.placeholder.com/600x400?text=Ofertas"
-                  alt="Ofertas"
-                  className="img-fluid rounded"
-                />
-              </Col>
-            </Row>
-          </Container>
-        </div>
-      </Carousel.Item>
-    </Carousel>
+      </div>
+    </div>
   );
 }

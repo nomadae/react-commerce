@@ -1,16 +1,6 @@
-import type React from 'react';
-import {
-  Container,
-  Navbar as BsNavbar,
-  Nav,
-  NavDropdown,
-  Badge,
-  Button,
-  Form,
-  InputGroup,
-} from 'react-bootstrap';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { House, Grid, Box, Person, Cart, Search } from 'react-bootstrap-icons';
+import { House, Grid, Box, Person, Cart, Search, List as ListIcon, X } from 'react-bootstrap-icons';
 import { useCart } from '~/context/CartContext';
 import { useAuth } from '~/context/AuthContext';
 
@@ -24,185 +14,214 @@ export function Navbar({ searchTerm, onSearchChange, onSearchSubmit }: NavbarPro
   const { itemCount, openCart } = useCart();
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close the account dropdown on outside click or Escape.
+  useEffect(() => {
+    if (!dropdownOpen) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!dropdownRef.current?.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setDropdownOpen(false);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [dropdownOpen]);
 
   const handleLogout = async () => {
+    setDropdownOpen(false);
     await logout();
+    setMobileOpen(false);
     navigate('/', { replace: true });
   };
 
   return (
-    <BsNavbar bg="white" expand="lg" className="shadow-sm py-3" sticky="top">
-      <Container>
-        <Link to="/" className="navbar-brand d-flex align-items-center">
-          <Box className="text-primary me-2" size={32} />
-          <span className="fw-bold fs-3 text-dark">TechStore</span>
-          <Badge bg="primary" className="ms-2">.com</Badge>
-        </Link>
+    <header className="sticky top-0 bg-white shadow-sm z-30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="flex items-center gap-3">
+          {/* Brand */}
+          <Link to="/" className="flex items-center shrink-0">
+            <Box size={32} className="text-blue-600 mr-2" />
+            <span className="font-bold text-xl text-gray-900">TechStore</span>
+            <span className="ml-1 bg-blue-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">.com</span>
+          </Link>
 
-        {/* Desktop search */}
-        <Form className="d-none d-lg-flex mx-4 flex-grow-1" onSubmit={onSearchSubmit}>
-          <InputGroup>
-            <Form.Control
-              type="text"
-              placeholder="Buscar productos..."
-              value={searchTerm}
-              onChange={onSearchChange}
-              className="border-end-0"
-            />
-            <Button variant="primary" type="submit" aria-label="Buscar">
-              <Search />
-            </Button>
-          </InputGroup>
-        </Form>
+          {/* Desktop search */}
+          <form onSubmit={onSearchSubmit} className="hidden lg:flex flex-1 mx-4 max-w-xl">
+            <div className="flex w-full">
+              <input
+                type="text"
+                placeholder="Buscar productos..."
+                value={searchTerm}
+                onChange={onSearchChange}
+                className="flex-1 px-4 py-2 bg-white text-gray-900 placeholder:text-gray-400 border border-gray-300 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <button type="submit" aria-label="Buscar" className="px-4 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 transition-colors">
+                <Search />
+              </button>
+            </div>
+          </form>
 
-        <div className="d-flex align-items-center gap-3">
-          {/* Desktop nav links */}
-          <Nav className="d-none d-lg-flex">
-            <Link to="/" className="nav-link d-flex align-items-center gap-1">
-              <House size={18} /> Inicio
-            </Link>
-            <Link to="/products" className="nav-link d-flex align-items-center gap-1">
-              <Grid size={18} /> Productos
-            </Link>
-            <NavDropdown
-              title={
-                <span className="d-flex align-items-center gap-1">
+          <div className="flex items-center gap-3 ml-auto">
+            {/* Desktop nav links */}
+            <nav className="hidden lg:flex items-center gap-1">
+              <Link to="/" className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                <House size={18} /> Inicio
+              </Link>
+              <Link to="/products" className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                <Grid size={18} /> Productos
+              </Link>
+
+              {/* Categories dropdown */}
+              <div className="relative group">
+                <button type="button" className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
                   <Box size={18} /> Categorías
-                </span>
-              }
-              id="categories-dropdown"
-            >
-              <Link to="/categorias/electronica" className="dropdown-item">
-                Electrónica
-              </Link>
-              <Link to="/categorias/computadoras" className="dropdown-item">
-                Computadoras
-              </Link>
-              <Link to="/categorias/audio" className="dropdown-item">
-                Audio
-              </Link>
-              <Link to="/categorias/wearables" className="dropdown-item">
-                Wearables
-              </Link>
-              <Link to="/categorias/fotografia" className="dropdown-item">
-                Fotografía
-              </Link>
-              <NavDropdown.Divider />
-              <Link to="/categorias" className="dropdown-item">
-                Ver todas
-              </Link>
-            </NavDropdown>
-          </Nav>
+                  <svg className="w-3 h-3 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <div className="hidden group-hover:block absolute right-0 pt-1 w-56 z-50">
+                  <div className="bg-white rounded-lg shadow-lg border border-gray-100 py-1">
+                    <Link to="/categorias/electronica" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Electrónica</Link>
+                    <Link to="/categorias/computadoras" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Computadoras</Link>
+                    <Link to="/categorias/audio" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Audio</Link>
+                    <Link to="/categorias/wearables" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Wearables</Link>
+                    <Link to="/categorias/fotografia" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Fotografía</Link>
+                    <div className="my-1 border-t border-gray-100" />
+                    <Link to="/categorias" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Ver todas</Link>
+                  </div>
+                </div>
+              </div>
+            </nav>
 
           {/* Mobile search */}
-          <Form className="d-lg-none" onSubmit={onSearchSubmit}>
-            <InputGroup size="sm">
-              <Form.Control
+          <form onSubmit={onSearchSubmit} className="lg:hidden">
+            <div className="flex items-center">
+              <input
                 type="text"
                 placeholder="Buscar..."
                 value={searchTerm}
                 onChange={onSearchChange}
+                className="w-32 sm:w-48 px-3 py-1.5 bg-white text-gray-900 placeholder:text-gray-400 border border-gray-300 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-              <Button variant="primary" size="sm" aria-label="Buscar">
+              <button type="submit" aria-label="Buscar" className="px-3 py-1.5 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700">
                 <Search />
-              </Button>
-            </InputGroup>
-          </Form>
+              </button>
+            </div>
+          </form>
 
           {/* Desktop account: user dropdown or login button */}
           {isAuthenticated && user ? (
-            <NavDropdown
-              title={
-                <span className="d-flex align-items-center gap-2">
-                  <img
-                    src={user.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=4f46e5&color=fff&size=64`}
-                    alt={user.name}
-                    className="rounded-circle"
-                    width={28}
-                    height={28}
-                    style={{ objectFit: 'cover' }}
-                  />
-                  <span className="d-none d-md-inline text-dark" style={{ fontSize: '0.875rem' }}>
-                    {user.name.split(' ')[0]}
-                  </span>
-                </span>
-              }
-              id="user-dropdown"
-              align="end"
-            >
-              <div className="px-3 py-2">
-                <div className="fw-semibold text-dark" style={{ fontSize: '0.875rem' }}>
-                  {user.name}
-                </div>
-                <div className="text-muted" style={{ fontSize: '0.75rem' }}>
-                  {user.email}
+            <div className="relative group hidden md:block" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setDropdownOpen((open) => !open)}
+                aria-haspopup="true"
+                aria-expanded={dropdownOpen}
+                className="flex items-center gap-2 py-1.5"
+              >
+                <img
+                  src={user.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=4f46e5&color=fff&size=64`}
+                  alt={user.name}
+                  className="rounded-full w-7 h-7 object-cover"
+                />
+                <span className="hidden sm:inline text-gray-800 text-sm">{user.name.split(' ')[0]}</span>
+              </button>
+              {/* pt-1 (padding) bridges the gap to the button instead of mt-1 (margin),
+                  which would leave a 4px strip outside the group and close the menu
+                  mid-hover. Keeping the gap inside the hoverable box lets the pointer
+                  travel from the avatar into the menu without losing :hover. */}
+              <div
+                className={`${dropdownOpen ? 'block' : 'hidden group-hover:block'} absolute right-0 pt-1 w-60 z-50`}
+              >
+                <div className="bg-white rounded-lg shadow-lg border border-gray-100 py-1">
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <div className="font-semibold text-gray-900 text-sm">{user.name}</div>
+                    <div className="text-gray-500 text-xs">{user.email}</div>
+                  </div>
+                  <Link
+                    to="/cuenta"
+                    onClick={() => setDropdownOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    <Person size={16} /> Mi Cuenta
+                  </Link>
+                  <div className="my-1 border-t border-gray-100" />
+                  <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                    Cerrar Sesión
+                  </button>
                 </div>
               </div>
-              <NavDropdown.Divider />
-              <Link to="/cuenta" className="dropdown-item">
-                <Person size={16} className="me-2" /> Mi Cuenta
-              </Link>
-              <NavDropdown.Divider />
-              <button
-                className="dropdown-item"
-                onClick={handleLogout}
-                style={{ cursor: 'pointer' }}
-              >
-                Cerrar Sesión
-              </button>
-            </NavDropdown>
+            </div>
           ) : (
             <Link
               to="/login"
-              className="btn btn-outline-primary btn-sm d-none d-md-inline"
+              className="hidden md:inline-flex items-center gap-1 px-3 py-2 border border-blue-600 text-blue-600 text-sm font-medium rounded-lg hover:bg-blue-50 transition-colors"
             >
-              <Person className="me-1" /> Iniciar Sesión
+              <Person className="mr-1" /> Iniciar Sesión
             </Link>
           )}
 
+          {/* Cart button */}
           <button
             type="button"
             onClick={openCart}
-            className="btn btn-primary position-relative"
+            className="relative p-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             aria-label={`Carrito con ${itemCount} productos`}
           >
             <Cart size={20} />
             {itemCount > 0 && (
-              <Badge
-                bg="danger"
-                className="position-absolute top-0 start-100 translate-middle rounded-pill"
-                style={{ fontSize: '0.7rem' }}
-              >
+              <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
                 {itemCount}
-              </Badge>
+              </span>
             )}
           </button>
 
-          <BsNavbar.Toggle aria-controls="basic-navbar-nav" />
+          {/* Mobile toggle */}
+          <button
+            type="button"
+            onClick={() => setMobileOpen((o) => !o)}
+            className="lg:hidden p-2 text-gray-700 hover:text-blue-600"
+            aria-label="Menú"
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? <X size={22} /> : <ListIcon size={22} />}
+          </button>
         </div>
-      </Container>
+      </div>
 
       {/* Mobile collapse menu */}
-      <BsNavbar.Collapse id="basic-navbar-nav" className="bg-white px-3 py-2 collapse-mobile-only">
-        <Nav className="flex-column w-100">
-          <Link to="/" className="nav-link py-2 border-bottom">Inicio</Link>
-          <Link to="/products" className="nav-link py-2 border-bottom">Productos</Link>
-          <Link to="/categorias" className="nav-link py-2 border-bottom">Categorías</Link>
+      {mobileOpen && (
+        <nav className="lg:hidden bg-white border-t border-gray-100">
+          <Link to="/" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 border-b border-gray-100 text-gray-700 hover:bg-gray-50">Inicio</Link>
+          <Link to="/products" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 border-b border-gray-100 text-gray-700 hover:bg-gray-50">Productos</Link>
+          <Link to="/categorias" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 border-b border-gray-100 text-gray-700 hover:bg-gray-50">Categorías</Link>
           {isAuthenticated ? (
             <>
-              <Link to="/cuenta" className="nav-link py-2 border-bottom">Mi Cuenta</Link>
-              <button
-                className="nav-link py-2 text-start w-100 border-0 bg-transparent"
-                onClick={handleLogout}
-              >
+              <Link to="/cuenta" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 border-b border-gray-100 text-gray-700 hover:bg-gray-50">Mi Cuenta</Link>
+              <button onClick={handleLogout} className="block w-full text-left px-4 py-2.5 text-red-600 hover:bg-red-50">
                 Cerrar Sesión
               </button>
             </>
           ) : (
-            <Link to="/login" className="nav-link py-2">Iniciar Sesión</Link>
+            <Link to="/login" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 text-gray-700 hover:bg-gray-50">
+              Iniciar Sesión
+            </Link>
           )}
-        </Nav>
-      </BsNavbar.Collapse>
-    </BsNavbar>
+        </nav>
+      )}
+      </div>
+    </header>
   );
 }

@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import type React from 'react';
-import { Container } from 'react-bootstrap';
 
 import type { Product, Category } from '~/types';
 import { mockProducts, mockCategories, simulateApiDelay } from '~/data/mock';
@@ -81,10 +80,10 @@ const HomePage = () => {
       <main>
         <HeroCarousel />
 
-        <Container className="py-5">
-          <h2 className="text-center mb-5 display-6 fw-bold">Categorías Destacadas</h2>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+          <h2 className="text-center mb-5 text-3xl font-bold">Categorías Destacadas</h2>
           <CategoryGrid categories={categories} loading={loading} />
-        </Container>
+        </div>
 
         <ProductGrid products={featuredProducts} loading={loading} onAddToCart={handleAddToCart} />
 
