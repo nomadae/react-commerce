@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { House, Grid, Box, Person, Cart, Search, List as ListIcon, X } from 'react-bootstrap-icons';
 import { useCart } from '~/context/CartContext';
@@ -15,15 +15,39 @@ export function Navbar({ searchTerm, onSearchChange, onSearchSubmit }: NavbarPro
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close the account dropdown on outside click or Escape.
+  useEffect(() => {
+    if (!dropdownOpen) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!dropdownRef.current?.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setDropdownOpen(false);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [dropdownOpen]);
 
   const handleLogout = async () => {
+    setDropdownOpen(false);
     await logout();
     setMobileOpen(false);
     navigate('/', { replace: true });
   };
 
   return (
-    <header className="bg-white shadow-sm z-30">
+    <header className="sticky top-0 bg-white shadow-sm z-30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <div className="flex items-center gap-3">
           {/* Brand */}
@@ -41,7 +65,7 @@ export function Navbar({ searchTerm, onSearchChange, onSearchSubmit }: NavbarPro
                 placeholder="Buscar productos..."
                 value={searchTerm}
                 onChange={onSearchChange}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 px-4 py-2 bg-white text-gray-900 placeholder:text-gray-400 border border-gray-300 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <button type="submit" aria-label="Buscar" className="px-4 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 transition-colors">
                 <Search />
@@ -67,14 +91,16 @@ export function Navbar({ searchTerm, onSearchChange, onSearchSubmit }: NavbarPro
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                <div className="hidden group-hover:block absolute right-0 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
-                  <Link to="/categorias/electronica" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Electrónica</Link>
-                  <Link to="/categorias/computadoras" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Computadoras</Link>
-                  <Link to="/categorias/audio" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Audio</Link>
-                  <Link to="/categorias/wearables" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Wearables</Link>
-                  <Link to="/categorias/fotografia" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Fotografía</Link>
-                  <div className="my-1 border-t border-gray-100" />
-                  <Link to="/categorias" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Ver todas</Link>
+                <div className="hidden group-hover:block absolute right-0 pt-1 w-56 z-50">
+                  <div className="bg-white rounded-lg shadow-lg border border-gray-100 py-1">
+                    <Link to="/categorias/electronica" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Electrónica</Link>
+                    <Link to="/categorias/computadoras" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Computadoras</Link>
+                    <Link to="/categorias/audio" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Audio</Link>
+                    <Link to="/categorias/wearables" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Wearables</Link>
+                    <Link to="/categorias/fotografia" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Fotografía</Link>
+                    <div className="my-1 border-t border-gray-100" />
+                    <Link to="/categorias" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Ver todas</Link>
+                  </div>
                 </div>
               </div>
             </nav>
@@ -87,7 +113,7 @@ export function Navbar({ searchTerm, onSearchChange, onSearchSubmit }: NavbarPro
                 placeholder="Buscar..."
                 value={searchTerm}
                 onChange={onSearchChange}
-                className="w-32 sm:w-48 px-3 py-1.5 border border-gray-300 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-32 sm:w-48 px-3 py-1.5 bg-white text-gray-900 placeholder:text-gray-400 border border-gray-300 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <button type="submit" aria-label="Buscar" className="px-3 py-1.5 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700">
                 <Search />
@@ -97,8 +123,14 @@ export function Navbar({ searchTerm, onSearchChange, onSearchSubmit }: NavbarPro
 
           {/* Desktop account: user dropdown or login button */}
           {isAuthenticated && user ? (
-            <div className="relative group hidden md:block">
-              <button type="button" className="flex items-center gap-2 py-1.5">
+            <div className="relative group hidden md:block" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setDropdownOpen((open) => !open)}
+                aria-haspopup="true"
+                aria-expanded={dropdownOpen}
+                className="flex items-center gap-2 py-1.5"
+              >
                 <img
                   src={user.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=4f46e5&color=fff&size=64`}
                   alt={user.name}
@@ -106,18 +138,30 @@ export function Navbar({ searchTerm, onSearchChange, onSearchSubmit }: NavbarPro
                 />
                 <span className="hidden sm:inline text-gray-800 text-sm">{user.name.split(' ')[0]}</span>
               </button>
-              <div className="hidden group-hover:block absolute right-0 mt-1 w-60 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
-                <div className="px-4 py-2 border-b border-gray-100">
-                  <div className="font-semibold text-gray-900 text-sm">{user.name}</div>
-                  <div className="text-gray-500 text-xs">{user.email}</div>
+              {/* pt-1 (padding) bridges the gap to the button instead of mt-1 (margin),
+                  which would leave a 4px strip outside the group and close the menu
+                  mid-hover. Keeping the gap inside the hoverable box lets the pointer
+                  travel from the avatar into the menu without losing :hover. */}
+              <div
+                className={`${dropdownOpen ? 'block' : 'hidden group-hover:block'} absolute right-0 pt-1 w-60 z-50`}
+              >
+                <div className="bg-white rounded-lg shadow-lg border border-gray-100 py-1">
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <div className="font-semibold text-gray-900 text-sm">{user.name}</div>
+                    <div className="text-gray-500 text-xs">{user.email}</div>
+                  </div>
+                  <Link
+                    to="/cuenta"
+                    onClick={() => setDropdownOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    <Person size={16} /> Mi Cuenta
+                  </Link>
+                  <div className="my-1 border-t border-gray-100" />
+                  <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                    Cerrar Sesión
+                  </button>
                 </div>
-                <Link to="/cuenta" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                  <Person size={16} /> Mi Cuenta
-                </Link>
-                <div className="my-1 border-t border-gray-100" />
-                <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-                  Cerrar Sesión
-                </button>
               </div>
             </div>
           ) : (

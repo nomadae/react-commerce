@@ -12,7 +12,7 @@ export function Newsletter() {
               <input
                 type="email"
                 placeholder="Tu correo electrónico"
-                className="flex-1 px-4 py-3 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+                className="flex-1 px-4 py-3 bg-white text-gray-900 placeholder:text-gray-400 border border-gray-300 rounded-lg text-sm caret-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
               />
               <button
                 type="submit"

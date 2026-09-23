@@ -1,4 +1,5 @@
-/* HomePage Styles */
-.homepage {
-  overflow-x: hidden;
-}
+/* HomePage Styles
+   The `overflow-x: hidden` guard that used to live here was removed: it made
+   .homepage a scroll container, which disabled `position: sticky` on the
+   Navbar rendered inside it. Horizontal overflow is now handled globally with
+   `overflow-x: clip` in app.css, which does not create a scroll container. */
