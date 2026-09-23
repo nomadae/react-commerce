@@ -1,50 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { Cart, ArrowLeft, Grid as GridIcon } from 'react-bootstrap-icons';
-import { mockProducts, mockCategories, simulateApiDelay } from '~/data/mock';
-import type { Product } from '~/types';
+import type { Product, Category } from '~/types';
 import { useCart } from '~/context/CartContext';
-import { ErrorAlert } from './ErrorAlert';
 import { renderRating } from '~/utils/rating';
-import { slugify } from '~/utils/slugify';
+import { ProductGridSkeleton } from './ProductGridSkeleton';
+import { NotFound } from './NotFound';
 
 interface CategoryProductsPageProps {
-  categorySlug: string;
+  /** null when the loader found no category for the :categorySlug param. */
+  category: Category | null;
+  products: Product[];
+  /** True while this route's loader is in flight during a client navigation. */
+  isPending: boolean;
 }
 
-export function CategoryProductsPage({ categorySlug }: CategoryProductsPageProps) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categoryName, setCategoryName] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export function CategoryProductsPage({
+  category,
+  products,
+  isPending,
+}: CategoryProductsPageProps) {
   const [addedIds, setAddedIds] = useState<Set<number>>(new Set());
 
   const { addToCart } = useCart();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [allProducts, allCategories] = await Promise.all([
-          simulateApiDelay(mockProducts, 400),
-          simulateApiDelay(mockCategories, 300),
-        ]);
-
-        const category = allCategories.find((c) => c.slug === categorySlug);
-        setCategoryName(category?.name || categorySlug);
-
-        const filtered = allProducts.filter(
-          (p) => slugify(p.category) === categorySlug
-        );
-        setProducts(filtered);
-      } catch {
-        setError('Error al cargar los productos. Intenta de nuevo.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [categorySlug]);
 
   const handleAddToCart = (product: Product) => {
     addToCart(product);
@@ -58,13 +36,16 @@ export function CategoryProductsPage({ categorySlug }: CategoryProductsPageProps
     }, 1500);
   };
 
-  if (error) {
+  if (!category) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <ErrorAlert message={error} />
-      </div>
+      <NotFound
+        message="Categoría no encontrada"
+        description="No existe ninguna categoría con esa dirección. Revisa el enlace o explora el catálogo completo."
+      />
     );
   }
+
+  const categoryName = category.name;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -84,7 +65,9 @@ export function CategoryProductsPage({ categorySlug }: CategoryProductsPageProps
               {categoryName}
             </h1>
             <p className="text-gray-500 mt-1">
-              {loading ? 'Cargando...' : `${products.length} producto${products.length !== 1 ? 's' : ''} en esta categoría`}
+              {isPending
+                ? 'Cargando...'
+                : `${products.length} producto${products.length !== 1 ? 's' : ''} en esta categoría`}
             </p>
           </div>
         </div>
@@ -99,16 +82,11 @@ export function CategoryProductsPage({ categorySlug }: CategoryProductsPageProps
           <ArrowLeft size={18} /> Ver todas las categorías
         </Link>
 
-        {/* Loading */}
-        {loading && (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-            <p className="mt-4 text-gray-500">Cargando productos...</p>
-          </div>
-        )}
+        {/* Navigating to another catalog route */}
+        {isPending && <ProductGridSkeleton />}
 
         {/* Empty state */}
-        {!loading && products.length === 0 && (
+        {!isPending && products.length === 0 && (
           <div className="text-center py-20">
             <div className="text-6xl mb-4 text-gray-300">
               <Cart size={64} className="mx-auto opacity-50" />
@@ -137,7 +115,7 @@ export function CategoryProductsPage({ categorySlug }: CategoryProductsPageProps
         )}
 
         {/* Product grid */}
-        {!loading && products.length > 0 && (
+        {!isPending && products.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.map((product) => {
               const justAdded = addedIds.has(product.id);

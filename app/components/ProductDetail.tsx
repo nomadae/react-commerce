@@ -1,45 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { Box, Truck, ShieldCheck, ArrowLeft } from 'react-bootstrap-icons';
-import { mockProducts, simulateApiDelay } from '~/data/mock';
 import type { Product } from '~/types';
 import { useCart } from '~/context/CartContext';
-import { ErrorAlert } from './ErrorAlert';
 import { renderRating } from '~/utils/rating';
+import { NotFound } from './NotFound';
 
 interface ProductDetailProps {
-  productId: number;
+  /** null when the loader found no product for the :productId param. */
+  product: Product | null;
 }
 
-export function ProductDetail({ productId }: ProductDetailProps) {
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export function ProductDetail({ product }: ProductDetailProps) {
   const [quantity, setQuantity] = useState(1);
   const [addedFeedback, setAddedFeedback] = useState(false);
 
   const { addToCart, openCart } = useCart();
-
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const products = await simulateApiDelay(mockProducts, 400);
-        const found = products.find((p) => p.id === productId);
-        if (!found) {
-          setError('Producto no encontrado');
-        } else {
-          setProduct(found);
-        }
-      } catch {
-        setError('Error al cargar el producto. Intenta de nuevo.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProduct();
-  }, [productId]);
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -54,31 +30,8 @@ export function ProductDetail({ productId }: ProductDetailProps) {
     openCart();
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-500">Cargando producto...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !product) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <ErrorAlert message={error || 'Producto no encontrado'} />
-        <div className="text-center mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
-          >
-            <ArrowLeft size={18} /> Volver a la tienda
-          </Link>
-        </div>
-      </div>
-    );
+  if (!product) {
+    return <NotFound message="Producto no encontrado" />;
   }
 
   const inStock = product.stock > 0;

@@ -1,38 +1,14 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { Grid as GridIcon } from 'react-bootstrap-icons';
-import { mockCategories, simulateApiDelay } from '~/data/mock';
 import type { Category } from '~/types';
-import { ErrorAlert } from './ErrorAlert';
 
-export function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface CategoriesPageProps {
+  categories: Category[];
+  /** True while this route's loader is in flight during a client navigation. */
+  isPending: boolean;
+}
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setLoading(true);
-        const data = await simulateApiDelay(mockCategories, 400);
-        setCategories(data);
-      } catch {
-        setError('Error al cargar las categorías. Intenta de nuevo.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCategories();
-  }, []);
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <ErrorAlert message={error} />
-      </div>
-    );
-  }
-
+export function CategoriesPage({ categories, isPending }: CategoriesPageProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -56,15 +32,26 @@ export function CategoriesPage() {
       </div>
 
       {/* Loading */}
-      {loading && (
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-          <p className="mt-4 text-gray-500">Cargando categorías...</p>
+      {isPending && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div
+            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
+            role="status"
+            aria-label="Cargando categorías"
+          >
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 animate-pulse">
+                <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-200" />
+                <div className="h-4 bg-gray-200 rounded w-2/3 mx-auto mb-2" />
+                <div className="h-3 bg-gray-200 rounded w-1/2 mx-auto" />
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
       {/* Category grid */}
-      {!loading && (
+      {!isPending && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {categories.map((category) => (

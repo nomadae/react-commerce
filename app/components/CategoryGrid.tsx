@@ -4,15 +4,23 @@ import { CategoryCard } from './CategoryCard';
 
 interface CategoryGridProps {
   categories: Category[];
-  loading: boolean;
+  isPending: boolean;
 }
 
-export function CategoryGrid({ categories, loading }: CategoryGridProps) {
-  if (loading) {
+export function CategoryGrid({ categories, isPending }: CategoryGridProps) {
+  if (isPending) {
     return (
-      <div className="flex flex-col items-center justify-center py-10">
-        <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-        <p className="mt-3 text-gray-500">Cargando categorías...</p>
+      <div
+        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
+        role="status"
+        aria-label="Cargando categorías"
+      >
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 animate-pulse">
+            <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gray-200" />
+            <div className="h-3 bg-gray-200 rounded w-2/3 mx-auto" />
+          </div>
+        ))}
       </div>
     );
   }

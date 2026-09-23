@@ -1,54 +1,23 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { Cart, ArrowLeft, Grid as GridIcon } from 'react-bootstrap-icons';
-import { mockProducts, simulateApiDelay } from '~/data/mock';
 import type { Product } from '~/types';
 import { useCart } from '~/context/CartContext';
-import { ErrorAlert } from './ErrorAlert';
 import { renderRating } from '~/utils/rating';
+import { ProductGridSkeleton } from './ProductGridSkeleton';
 
-export function OfertasPage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface OfertasPageProps {
+  products: Product[];
+  /** True while this route's loader is in flight during a client navigation. */
+  isPending: boolean;
+}
 
+export function OfertasPage({ products, isPending }: OfertasPageProps) {
   const { addToCart, openCart } = useCart();
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const all = await simulateApiDelay(mockProducts);
-        if (cancelled) return;
-        setProducts(
-          all
-            .filter((p) => p.discount > 0)
-            .sort((a, b) => b.discount - a.discount)
-        );
-      } catch {
-        if (cancelled) return;
-        setError('Error al cargar las ofertas. Por favor intenta de nuevo.');
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    fetchData();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const handleAddToCart = (product: Product) => {
     addToCart(product);
     openCart();
   };
-
-  if (error) {
-    return <ErrorAlert message={error} />;
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -74,18 +43,8 @@ export function OfertasPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-xl shadow-sm overflow-hidden animate-pulse">
-                <div className="h-48 bg-gray-200" />
-                <div className="p-4 space-y-3">
-                  <div className="h-4 bg-gray-200 rounded w-3/4" />
-                  <div className="h-4 bg-gray-200 rounded w-1/2" />
-                </div>
-              </div>
-            ))}
-          </div>
+        {isPending ? (
+          <ProductGridSkeleton count={4} />
         ) : products.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
             <Cart size={64} className="mx-auto text-gray-300 mb-4" />

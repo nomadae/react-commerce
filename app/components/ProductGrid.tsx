@@ -1,14 +1,15 @@
 import { Link } from 'react-router';
 import type { Product } from '~/types';
 import { ProductCard } from './ProductCard';
+import { ProductGridSkeleton } from './ProductGridSkeleton';
 
 interface ProductGridProps {
   products: Product[];
-  loading: boolean;
+  isPending: boolean;
   onAddToCart: (productId: number) => void;
 }
 
-export function ProductGrid({ products, loading, onAddToCart }: ProductGridProps) {
+export function ProductGrid({ products, isPending, onAddToCart }: ProductGridProps) {
   return (
     <div className="bg-gray-50 py-5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,11 +20,8 @@ export function ProductGrid({ products, loading, onAddToCart }: ProductGridProps
           </Link>
         </div>
 
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-10">
-            <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-            <p className="mt-3 text-gray-500">Cargando productos...</p>
-          </div>
+        {isPending ? (
+          <ProductGridSkeleton count={4} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {products.map((product) => (

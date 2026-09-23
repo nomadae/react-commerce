@@ -1,43 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { Cart, ArrowLeft, Grid as GridIcon, Funnel } from 'react-bootstrap-icons';
-import { mockProducts, simulateApiDelay } from '~/data/mock';
 import type { Product } from '~/types';
+import { ALL_CATEGORIES, getProductFilterCategories } from '~/data/catalog';
 import { useCart } from '~/context/CartContext';
-import { ErrorAlert } from './ErrorAlert';
 import { renderRating } from '~/utils/rating';
+import { ProductGridSkeleton } from './ProductGridSkeleton';
 
 type SortKey = 'default' | 'price-asc' | 'price-desc' | 'rating' | 'name';
 
-export function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string>('Todos');
+interface ProductsPageProps {
+  products: Product[];
+  /** True while this route's loader is in flight during a client navigation. */
+  isPending: boolean;
+}
+
+export function ProductsPage({ products, isPending }: ProductsPageProps) {
+  const [activeCategory, setActiveCategory] = useState<string>(ALL_CATEGORIES);
   const [sortBy, setSortBy] = useState<SortKey>('default');
   const [addedIds, setAddedIds] = useState<Set<number>>(new Set());
 
   const { addToCart } = useCart();
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const data = await simulateApiDelay(mockProducts, 500);
-        setProducts(data);
-      } catch {
-        setError('Error al cargar los productos. Intenta de nuevo.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
-
-  const categories = ['Todos', ...new Set(mockProducts.map((p) => p.category))];
+  const categories = getProductFilterCategories();
 
   const filtered = products
-    .filter((p) => activeCategory === 'Todos' || p.category === activeCategory)
+    .filter((p) => activeCategory === ALL_CATEGORIES || p.category === activeCategory)
     .sort((a, b) => {
       switch (sortBy) {
         case 'price-asc':
@@ -65,14 +53,6 @@ export function ProductsPage() {
     }, 1500);
   };
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <ErrorAlert message={error} />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -90,7 +70,9 @@ export function ProductsPage() {
                 Todos los Productos
               </h1>
               <p className="text-gray-500 mt-1">
-                {filtered.length} producto{filtered.length !== 1 ? 's' : ''} disponible{filtered.length !== 1 ? 's' : ''}
+                {isPending
+                  ? 'Cargando...'
+                  : `${filtered.length} producto${filtered.length !== 1 ? 's' : ''} disponible${filtered.length !== 1 ? 's' : ''}`}
               </p>
             </div>
           </div>
@@ -135,16 +117,11 @@ export function ProductsPage() {
           </div>
         </div>
 
-        {/* Loading */}
-        {loading && (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-            <p className="mt-4 text-gray-500">Cargando productos...</p>
-          </div>
-        )}
+        {/* Navigating to another catalog route */}
+        {isPending && <ProductGridSkeleton />}
 
         {/* Empty state */}
-        {!loading && filtered.length === 0 && (
+        {!isPending && filtered.length === 0 && (
           <div className="text-center py-20">
             <div className="text-6xl mb-4 text-gray-300">
               <Cart size={64} className="mx-auto opacity-50" />
@@ -156,7 +133,7 @@ export function ProductsPage() {
               Intenta con otra categoría o elimina los filtros.
             </p>
             <button
-              onClick={() => setActiveCategory('Todos')}
+              onClick={() => setActiveCategory(ALL_CATEGORIES)}
               className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
             >
               <ArrowLeft size={18} /> Mostrar todos los productos
@@ -165,7 +142,7 @@ export function ProductsPage() {
         )}
 
         {/* Product grid */}
-        {!loading && filtered.length > 0 && (
+        {!isPending && filtered.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filtered.map((product) => {
               const justAdded = addedIds.has(product.id);
