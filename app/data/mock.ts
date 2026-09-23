@@ -1,4 +1,5 @@
 import type { Product, Category } from '~/types';
+import { slugify } from '~/utils/slugify';
 
 export const mockProducts: Product[] = [
   {
@@ -74,14 +75,6 @@ export const mockProducts: Product[] = [
     stock: 7,
   },
 ];
-
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/\s+/g, '-');
-}
 
 export const mockCategories: Category[] = [
   { id: 1, name: 'Electrónica', slug: slugify('Electrónica'), count: 245, image: 'https://via.placeholder.com/150x150?text=Electronica' },

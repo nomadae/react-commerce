@@ -6,14 +6,7 @@ import type { Product } from '~/types';
 import { useCart } from '~/context/CartContext';
 import { ErrorAlert } from './ErrorAlert';
 import { renderRating } from '~/utils/rating';
-
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/\s+/g, '-');
-}
+import { slugify } from '~/utils/slugify';
 
 interface CategoryProductsPageProps {
   categorySlug: string;
