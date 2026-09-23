@@ -1,25 +1,5 @@
 import { Link } from 'react-router';
 
-const slides = [
-  {
-    bg: 'bg-blue-600',
-    title: 'Tecnología al Alcance',
-    subtitle: 'Descubre lo último en electrónica y gadgets con los mejores precios del mercado.',
-    image: 'https://via.placeholder.com/600x400?text=Tech',
-    imageAlt: 'Tecnología',
-    primary: { to: '/products', label: 'Comprar Ahora' },
-    secondary: { to: '/ofertas', label: 'Ver Ofertas' },
-  },
-  {
-    bg: 'bg-green-600',
-    title: 'Hasta 40% OFF',
-    subtitle: 'Ofertas exclusivas en productos seleccionados. ¡No te las pierdas!',
-    image: 'https://via.placeholder.com/600x400?text=Ofertas',
-    imageAlt: 'Ofertas',
-    primary: { to: '/ofertas', label: 'Ver Ofertas' },
-  },
-];
-
 export function HeroCarousel() {
   return (
     <div className="relative overflow-hidden">

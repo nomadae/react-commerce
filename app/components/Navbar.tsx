@@ -23,7 +23,7 @@ export function Navbar({ searchTerm, onSearchChange, onSearchSubmit }: NavbarPro
   };
 
   return (
-    <header className="bg-white shadow-sm sticky-top z-30">
+    <header className="bg-white shadow-sm z-30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <div className="flex items-center gap-3">
           {/* Brand */}
